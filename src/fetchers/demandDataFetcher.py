@@ -1,7 +1,7 @@
 import pandas as pd
 import datetime as dt
 from typing import List, Tuple
-import psycopg2
+
 from src.fetchers.scadaApiFetcher import ScadaApiFetcher
 
 def toMinuteWiseData(demandDf:pd.core.frame.DataFrame, entity:str)->pd.core.frame.DataFrame:
@@ -18,7 +18,7 @@ def toMinuteWiseData(demandDf:pd.core.frame.DataFrame, entity:str)->pd.core.fram
         demandDf = demandDf.resample('1min', on='timestamp').mean()   # this will set timestamp as index of dataframe
     except Exception as err:
         print('error while resampling', err)
-    demandDf.insert(0, "entityName", entity)                      # inserting column entityName with all values of 96 block = entity
+    demandDf.insert(0, "entityTag", entity)                      # inserting column entityName with all values of 96 block = entity
     demandDf.reset_index(inplace=True)
     return demandDf
 
@@ -38,10 +38,12 @@ def filterAction(demandDf, currDate, entity, minRamp)-> dict:
     resultDict={}
     countError = 0
     for ind in demandDf.index.tolist()[1:]:
-        if (demandDf['demandValue'][ind]-demandDf['demandValue'][ind-1]) > abs(minRamp) :
+        if abs(demandDf['demandValue'][ind]-demandDf['demandValue'][ind-1]) > minRamp :
             demandDf['demandValue'][ind] = demandDf['demandValue'][ind-1]
             countError = countError + 1
-    purityPercent = 100 - countError/(len(demandDf.index)) 
+    
+    purityPercent = 100 - (countError/(len(demandDf.index)))*100 
+    
     purityPercentTuple = (currDate,entity,purityPercent )
     resultDict['demandDf'] = demandDf
     resultDict['purityPercent'] = purityPercentTuple
@@ -84,7 +86,7 @@ def toListOfTuple(df:pd.core.frame.DataFrame) -> List[Tuple]:
     """    
     data:List[Tuple] = []
     for ind in df.index:
-        tempTuple = (str(df['timestamp'][ind]), df['entityName'][ind], float(df['demandValue'][ind]) )
+        tempTuple = (str(df['timestamp'][ind]), df['entityTag'][ind], float(df['demandValue'][ind]) )
         data.append(tempTuple)
     return data
 
@@ -98,7 +100,7 @@ def fetchDemandDataFromApi(currDate: dt.datetime, configDict: dict)-> dict:
 
     Returns:
         dict: demand_purity_dict['data'] = per min demand data for each entity in form of list of tuple
-              demand_purity_dict['purityPercentageList'] = purity percentage of each entity in form of list of tuple
+              demand_purity_dict['purityPercentage'] = purity percentage of each entity in form of list of tuple
 
     """    
     tokenUrl: str = configDict['tokenUrl']
@@ -106,9 +108,9 @@ def fetchDemandDataFromApi(currDate: dt.datetime, configDict: dict)-> dict:
     clientId = configDict['clientId']
     clientSecret = configDict['clientSecret']
 
-    purityPercentageList : List[Tuple]= []
+    purityPercentageList:List[Tuple] = []
     #initializing temporary empty dataframe that append demand values of all entities
-    tempDf = pd.DataFrame(columns = [ 'timestamp','entityName','demandValue']) 
+    tempDf = pd.DataFrame(columns = [ 'timestamp','entityTag','demandValue']) 
     #list of all entities
     listOfEntity =['WRLDCMP.SCADA1.A0046945','WRLDCMP.SCADA1.A0046948','WRLDCMP.SCADA1.A0046953','WRLDCMP.SCADA1.A0046957','WRLDCMP.SCADA1.A0046962','WRLDCMP.SCADA1.A0046978','WRLDCMP.SCADA1.A0046980','WRLDCMP.SCADA1.A0047000']
     #creating object of ScadaApiFetcher class 
@@ -122,25 +124,26 @@ def fetchDemandDataFromApi(currDate: dt.datetime, configDict: dict)-> dict:
         #converting to minutewise data and adding entityName column to dataframe
         demandDf = toMinuteWiseData(demandDf,entity)
         
+        # if entity == 'WRLDCMP.SCADA1.A0046980':
+        #     demandDf.to_excel(r'D:\wrldc_projects\demand_forecasting\filtering demo\mah-29-aug.xlsx')
+
         #applying filtering logic
-        resultDict = applyFilteringToDf(demandDf,entity, str(currDate))
+        date_key = currDate.date()
+        resultDict = applyFilteringToDf(demandDf,entity, str(date_key))
+
+        # if entity == 'WRLDCMP.SCADA1.A0046980':
+        #     resultDict['demandDf'].to_excel(r'D:\wrldc_projects\demand_forecasting\filtering demo\mah-29-aug1.xlsx')
 
         #appending purity percentage of each entity to list 
         purityPercentageList.append(resultDict['purityPercent'])
 
         #appending per min demand data for each entity to tempDf
         tempDf = pd.concat([tempDf, resultDict['demandDf']],ignore_index=True)
-    
-    # code check correctness of no. of rows obtained for each entity
-    # groupedDates = tempDf.groupby("entityName")
-    # for nameOfGroup, groupDf in groupedDates:
-    #     print(nameOfGroup)
-    #     print(len(groupDf.index))
-    #     print(groupDf.head())
 
     # converting tempdf(contain per min demand values of all entities) to list of tuple 
     data:List[Tuple] = toListOfTuple(tempDf)
     
     demand_purity_dict = { 'data': data, 'purityPercentage': purityPercentageList}
+    
     return demand_purity_dict
     
