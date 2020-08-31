@@ -56,4 +56,5 @@ class PurityPercentageInsertionRepo():
         finally:
             cur.close()
             connection.close()
+            print("purity perecentage insertion complete")
         return isInsertionSuccess

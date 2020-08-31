@@ -1,16 +1,18 @@
 import argparse
 import datetime as dt
 from src.appConfig import getAppConfigDict
-from src.rawDataCreator.minWiseDemandDataCreator import createMinWiseDemand_purityPercent
+from src.rawDataCreator.minWiseDemand_purtiyPercentCreator import createMinWiseDemand_purityPercent
 from src.rawDataCreator.entityMappingTableCreator import createEntityMappingTable
+from src.rawDataCreator.blockwiseDemandCreator import createBlockWiseDemand
 
-startDate = dt.datetime.strptime("2020-08-29", '%Y-%m-%d')
+startDate = dt.datetime.strptime("2020-08-25", '%Y-%m-%d')
 endDate = dt.datetime.strptime("2020-08-29", '%Y-%m-%d')
 
 configDict=getAppConfigDict()
-createMinWiseDemand_purityPercent(startDate,endDate,configDict)
+# print(createMinWiseDemand_purityPercent(startDate,endDate,configDict))
 
 # createEntityMappingTable(configDict)
+print(createBlockWiseDemand(startDate,endDate,configDict))
 
 # import psycopg2
 

@@ -41,9 +41,10 @@ def filterAction(demandDf, currDate, entity, minRamp)-> dict:
         if abs(demandDf['demandValue'][ind]-demandDf['demandValue'][ind-1]) > minRamp :
             demandDf['demandValue'][ind] = demandDf['demandValue'][ind-1]
             countError = countError + 1
-    
-    purityPercent = 100 - (countError/(len(demandDf.index)))*100 
-    
+    try:
+        purityPercent = 100 - (countError/(len(demandDf.index)))*100 
+    except Exception as err:
+        print('error while calculating purity percentage', err)
     purityPercentTuple = (currDate,entity,purityPercent )
     resultDict['demandDf'] = demandDf
     resultDict['purityPercent'] = purityPercentTuple
