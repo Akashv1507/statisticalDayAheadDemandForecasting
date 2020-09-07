@@ -1,8 +1,12 @@
 import datetime as dt
-from typing import List, Tuple
+from typing import List, Tuple, TypedDict
 from src.fetchers.demandDataFetcher import fetchDemandDataFromApi
 from src.repos.purityPercentageInsertionRepo import PurityPercentageInsertionRepo
 from src.repos.minwiseDemandInsertionRepo import MinWiseDemandInsertionRepo
+
+class Idemand_purity_dict(TypedDict):
+    data: List[Tuple]
+    purityPercentage: List[Tuple]
 
 def createMinWiseDemand_purityPercent(startDate:dt.datetime ,endDate: dt.datetime,configDict:dict)->bool:
     """ create minwise demand data and daywise purity percentage of each entity
@@ -29,7 +33,7 @@ def createMinWiseDemand_purityPercent(startDate:dt.datetime ,endDate: dt.datetim
     
     # Iterating through each day and inserting demand and purity percentage 
     while currDate <= endDate:
-        demand_purity_dict = fetchDemandDataFromApi(currDate,configDict)
+        demand_purity_dict: Idemand_purity_dict = fetchDemandDataFromApi(currDate,configDict)
 
         isInsertionSuccessPurity = obj_purityPercentageInsRepo.insertPurityPercentage(demand_purity_dict['purityPercentage'])
         if isInsertionSuccessPurity:

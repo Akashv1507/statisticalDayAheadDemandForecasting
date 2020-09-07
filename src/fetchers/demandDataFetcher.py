@@ -1,8 +1,16 @@
 import pandas as pd
 import datetime as dt
-from typing import List, Tuple
+from typing import List, Tuple, TypedDict
 
 from src.fetchers.scadaApiFetcher import ScadaApiFetcher
+
+class IresultFormat(TypedDict):
+    demandDf : pd.core.frame.DataFrame
+    purityPercent : Tuple
+
+class Idemand_purity_dict(TypedDict):
+    data: List[Tuple]
+    purityPercentage: List[Tuple]
 
 def toMinuteWiseData(demandDf:pd.core.frame.DataFrame, entity:str)->pd.core.frame.DataFrame:
     """convert random secondwise demand dataframe to minwise demand dataframe and add entity column to dataframe.
@@ -35,7 +43,7 @@ def filterAction(demandDf, currDate, entity, minRamp)-> dict:
         dict: resultDict['demandDf'] = filtered demandDf
               resultDict['purityPercent'] = purityPercentTuple
     """    
-    resultDict={}
+    # resultDict : resultFormat ={}
     countError = 0
     for ind in demandDf.index.tolist()[1:]:
         if abs(demandDf['demandValue'][ind]-demandDf['demandValue'][ind-1]) > minRamp :
@@ -46,8 +54,13 @@ def filterAction(demandDf, currDate, entity, minRamp)-> dict:
     except Exception as err:
         print('error while calculating purity percentage', err)
     purityPercentTuple = (currDate,entity,purityPercent )
-    resultDict['demandDf'] = demandDf
-    resultDict['purityPercent'] = purityPercentTuple
+   
+    # resultDict['demandDf'] = demandDf
+    # resultDict['purityPercent'] = purityPercentTuple
+    resultDict:IresultFormat = {
+        'demandDf': demandDf,
+        'purityPercent': purityPercentTuple
+    }
     return resultDict
     
 
@@ -73,7 +86,7 @@ def applyFilteringToDf(demandDf, entity, currDate) -> dict:
         resultDict = filterAction(demandDf, currDate, entity, 1000)
    
     if entity == 'WRLDCMP.SCADA1.A0047000':
-        resultDict = filterAction(demandDf, currDate, entity, 2000)
+        resultDict:IresultFormat = filterAction(demandDf, currDate, entity, 2000)
     return resultDict
 
 def toListOfTuple(df:pd.core.frame.DataFrame) -> List[Tuple]:
@@ -111,7 +124,7 @@ def fetchDemandDataFromApi(currDate: dt.datetime, configDict: dict)-> dict:
 
     purityPercentageList:List[Tuple] = []
     #initializing temporary empty dataframe that append demand values of all entities
-    tempDf = pd.DataFrame(columns = [ 'timestamp','entityTag','demandValue']) 
+    storageDf = pd.DataFrame(columns = [ 'timestamp','entityTag','demandValue']) 
     #list of all entities
     listOfEntity =['WRLDCMP.SCADA1.A0046945','WRLDCMP.SCADA1.A0046948','WRLDCMP.SCADA1.A0046953','WRLDCMP.SCADA1.A0046957','WRLDCMP.SCADA1.A0046962','WRLDCMP.SCADA1.A0046978','WRLDCMP.SCADA1.A0046980','WRLDCMP.SCADA1.A0047000']
     #creating object of ScadaApiFetcher class 
@@ -130,7 +143,7 @@ def fetchDemandDataFromApi(currDate: dt.datetime, configDict: dict)-> dict:
 
         #applying filtering logic
         date_key = currDate.date()
-        resultDict = applyFilteringToDf(demandDf,entity, str(date_key))
+        resultDict : IresultFormat = applyFilteringToDf(demandDf,entity, str(date_key))
 
         # if entity == 'WRLDCMP.SCADA1.A0046980':
         #     resultDict['demandDf'].to_excel(r'D:\wrldc_projects\demand_forecasting\filtering demo\mah-29-aug1.xlsx')
@@ -139,12 +152,12 @@ def fetchDemandDataFromApi(currDate: dt.datetime, configDict: dict)-> dict:
         purityPercentageList.append(resultDict['purityPercent'])
 
         #appending per min demand data for each entity to tempDf
-        tempDf = pd.concat([tempDf, resultDict['demandDf']],ignore_index=True)
+        storageDf = pd.concat([storageDf, resultDict['demandDf']],ignore_index=True)
 
     # converting tempdf(contain per min demand values of all entities) to list of tuple 
-    data:List[Tuple] = toListOfTuple(tempDf)
+    data:List[Tuple] = toListOfTuple(storageDf)
     
-    demand_purity_dict = { 'data': data, 'purityPercentage': purityPercentageList}
+    demand_purity_dict : Idemand_purity_dict = { 'data': data, 'purityPercentage': purityPercentageList}
     
     return demand_purity_dict
     

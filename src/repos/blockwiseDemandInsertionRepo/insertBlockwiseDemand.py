@@ -25,7 +25,7 @@ class BlockWiseDemandInsertionRepo():
         
         # making list of tuple of timestamp(unique),entity_tag based on which deletion takes place before insertion of duplicate
 
-        existingEntityRows = [(x[0],x[1]) for x in data]
+        existingRows = [(x[0],x[1]) for x in data]
 
         try:
             
@@ -41,7 +41,7 @@ class BlockWiseDemandInsertionRepo():
                 try:
                     cur.execute("ALTER SESSION SET NLS_DATE_FORMAT = 'YYYY-MM-DD HH24:MI:SS' ")
                     del_sql = "DELETE FROM derived_blockwise_demand WHERE time_stamp = :1 and entity_tag=:2"
-                    cur.executemany(del_sql, existingEntityRows)
+                    cur.executemany(del_sql, existingRows)
                     insert_sql = "INSERT INTO derived_blockwise_demand(time_stamp,ENTITY_TAG,demand_value) VALUES(:1, :2, :3)"
                     cur.executemany(insert_sql, data)
                 except Exception as e:

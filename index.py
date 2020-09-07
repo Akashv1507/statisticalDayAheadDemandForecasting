@@ -5,14 +5,14 @@ from src.rawDataCreator.minWiseDemand_purtiyPercentCreator import createMinWiseD
 from src.rawDataCreator.entityMappingTableCreator import createEntityMappingTable
 from src.derivedDataCreator.blockwiseDemandCreator import createBlockWiseDemand
 
-startDate = dt.datetime.strptime("2020-08-25", '%Y-%m-%d')
-endDate = dt.datetime.strptime("2020-08-29", '%Y-%m-%d')
+startDate = dt.datetime.strptime("2020-08-30", '%Y-%m-%d')
+endDate = dt.datetime.strptime("2020-08-31", '%Y-%m-%d')
 
 configDict=getAppConfigDict()
 # print(createMinWiseDemand_purityPercent(startDate,endDate,configDict))
 
 # createEntityMappingTable(configDict)
-print(createBlockWiseDemand(startDate,endDate,configDict))
+# print(createBlockWiseDemand(startDate,endDate,configDict))
 
 # import psycopg2
 
