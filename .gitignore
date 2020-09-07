@@ -1,3 +1,5 @@
 venv/
 config.xlsx
 data_files/
+apiIndex.py
+scadaApiFetcher.py

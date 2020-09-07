@@ -40,9 +40,9 @@ class BlockWiseDemandInsertionRepo():
                 cur = connection.cursor()
                 try:
                     cur.execute("ALTER SESSION SET NLS_DATE_FORMAT = 'YYYY-MM-DD HH24:MI:SS' ")
-                    del_sql = "DELETE FROM raw_blockwise_demand WHERE time_stamp = :1 and entity_tag=:2"
+                    del_sql = "DELETE FROM derived_blockwise_demand WHERE time_stamp = :1 and entity_tag=:2"
                     cur.executemany(del_sql, existingEntityRows)
-                    insert_sql = "INSERT INTO raw_blockwise_demand(time_stamp,ENTITY_TAG,demand_value) VALUES(:1, :2, :3)"
+                    insert_sql = "INSERT INTO derived_blockwise_demand(time_stamp,ENTITY_TAG,demand_value) VALUES(:1, :2, :3)"
                     cur.executemany(insert_sql, data)
                 except Exception as e:
                     print("error while insertion/deletion->", e)

@@ -3,7 +3,7 @@ import datetime as dt
 from src.appConfig import getAppConfigDict
 from src.rawDataCreator.minWiseDemand_purtiyPercentCreator import createMinWiseDemand_purityPercent
 from src.rawDataCreator.entityMappingTableCreator import createEntityMappingTable
-from src.rawDataCreator.blockwiseDemandCreator import createBlockWiseDemand
+from src.derivedDataCreator.blockwiseDemandCreator import createBlockWiseDemand
 
 startDate = dt.datetime.strptime("2020-08-25", '%Y-%m-%d')
 endDate = dt.datetime.strptime("2020-08-29", '%Y-%m-%d')
