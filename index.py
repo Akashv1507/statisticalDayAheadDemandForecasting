@@ -4,9 +4,14 @@ from src.appConfig import getAppConfigDict
 from src.rawDataCreator.minWiseDemand_purtiyPercentCreator import createMinWiseDemand_purityPercent
 from src.rawDataCreator.entityMappingTableCreator import createEntityMappingTable
 from src.derivedDataCreator.blockwiseDemandCreator import createBlockWiseDemand
+from src.derivedDataCreator.stagingBlockwiseDemandCreator import createStagingBlockWiseDemand
 
-startDate = dt.datetime.strptime("2020-08-30", '%Y-%m-%d')
-endDate = dt.datetime.strptime("2020-08-31", '%Y-%m-%d')
+
+startDate = dt.datetime.strptime("2020-08-25", '%Y-%m-%d')
+endDate = dt.datetime.strptime("2020-08-26", '%Y-%m-%d')
+
+#command line i/p default set to false
+wantUpdation = True
 
 configDict=getAppConfigDict()
 # print(createMinWiseDemand_purityPercent(startDate,endDate,configDict))
@@ -14,8 +19,5 @@ configDict=getAppConfigDict()
 # createEntityMappingTable(configDict)
 # print(createBlockWiseDemand(startDate,endDate,configDict))
 
-# import psycopg2
-
-# conn = psycopg2.connect(database='testdb' , user='postgres', password='oracle123', host='127.0.0.1', port='5432')
-# print ("Opened database successfully")
+# print(createStagingBlockWiseDemand(startDate,endDate,configDict,wantUpdation))
 
