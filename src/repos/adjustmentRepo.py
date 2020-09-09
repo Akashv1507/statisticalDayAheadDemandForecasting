@@ -108,7 +108,7 @@ class Adjustment():
         finally:
             cur.close()
             connection.close()
-            print("staging blockwise demand data inserrtion complete")
+            # print("staging blockwise demand data insertion complete")
         return isInsertionSuccess
 
 

@@ -2,7 +2,7 @@ import datetime as dt
 from typing import List, Tuple
 from src.repos.adjustmentRepo import Adjustment
 
-def doAdjustmentBeforeForecast(startDate : dt.datetime, endDate :dt.datetime, configDict:dict):
+def doAdjustmentBeforeForecast(startDate : dt.datetime, endDate :dt.datetime, configDict:dict)->bool:
 
 
 
@@ -19,7 +19,8 @@ def doAdjustmentBeforeForecast(startDate : dt.datetime, endDate :dt.datetime, co
             isAdjustmentSuccesscount = isAdjustmentSuccesscount + 1
         currDate += dt.timedelta(days=1)
 
-    if isAdjustmentSuccesscount == numOfDays +1 
+    numOfDays = (endDate-startDate).days
+    if isAdjustmentSuccesscount == numOfDays +1 :
         return True
     else:
         return False

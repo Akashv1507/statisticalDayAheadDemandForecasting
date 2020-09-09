@@ -3,3 +3,5 @@ config.xlsx
 data_files/
 apiIndex.py
 scadaApiFetcher.py
+demo.bat
+demoBatch.py
