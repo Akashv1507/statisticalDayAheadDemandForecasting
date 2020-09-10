@@ -27,7 +27,7 @@ endDate = endDate.replace(hour=0, minute=0, second=0, microsecond=0)
 print('startDate = {0}, endDate = {1}'.format(dt.strftime(
     startDate, '%Y-%m-%d'), dt.strftime(endDate, '%Y-%m-%d')))
 
-# create raw freq between start and end dates
+# create blockwise demand between start and end dates
 isRawDataCreationSuccess = createBlockWiseDemand(startDate,endDate,configDict)
 
 if isRawDataCreationSuccess:

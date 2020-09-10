@@ -23,7 +23,7 @@ def toMinuteWiseData(demandDf:pd.core.frame.DataFrame, entity:str)->pd.core.fram
         pd.core.frame.DataFrame: minwise demand dataframe
     """    
     try:
-        demandDf = demandDf.resample('1min', on='timestamp').mean()   # this will set timestamp as index of dataframe
+        demandDf = demandDf.resample('1min', on='timestamp').agg({'demandValue': 'first'})  # this will set timestamp as index of dataframe
     except Exception as err:
         print('error while resampling', err)
     demandDf.insert(0, "entityTag", entity)                      # inserting column entityName with all values of 96 block = entity

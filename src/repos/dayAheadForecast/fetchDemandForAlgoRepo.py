@@ -19,28 +19,41 @@ class DemandFetchForAlgoRepo():
 
     
     def applyDayAheadForecast(self, demandDf:pd.core.frame.DataFrame, entity:str,currDate:dt.datetime)->pd.core.frame.DataFrame:
+        """applying DA forecasting algorithm
+
+        Args:
+            demandDf (pd.core.frame.DataFrame): demanDf containing D-2,D-7,D-9,D-14 demand of a particular entity
+            entity (str): entity name
+            currDate (dt.datetime): current date
+
+        Returns:
+            pd.core.frame.DataFrame: forecastedDf of a particular entity
+        """        
         
         dateOfForecast = currDate + dt.timedelta(days=1)
+        #calculating parameters A,B,C,avg
         demandDf['A']= (demandDf['dMinus7DemandValue']-demandDf['dMinus2DemandValue'])/demandDf['dMinus2DemandValue']
         demandDf['B']= (demandDf['dMinus9DemandValue']-demandDf['dMinus7DemandValue'])/demandDf['dMinus9DemandValue']
         demandDf['C']= (demandDf['dMinus9DemandValue']-demandDf['dMinus14DemandValue'])/demandDf['dMinus9DemandValue']
         demandDf['avg'] = demandDf[['A', 'B', 'C']].mean(axis=1)
+        #forecasting logic
         demandDf['forecastedDemand'] = (1+demandDf['avg'])*demandDf['dMinus2DemandValue']
         demandDf['timestamp'] = pd.date_range(start=dateOfForecast,freq='15min',periods=96)
         demandDf['entityTag'] = entity
+        #selecting only timestamp, entityTag, and forecasted demand columns from demandDf
         forecastedDf = demandDf[['timestamp', 'entityTag', 'forecastedDemand']]
         return forecastedDf
 
 
 
     def toListOfTuple(self,df:pd.core.frame.DataFrame) -> List[Tuple]:
-        """convert BLOCKWISE demand data to list of tuples[(timestamp,entityTag,demandValue),]
+        """convert forecasted BLOCKWISE demand data to list of tuples[(timestamp,entityTag,demandValue),]
 
         Args:
-            df (pd.core.frame.DataFrame): block wise demand dataframe
+            df (pd.core.frame.DataFrame): forecasted block wise demand dataframe
 
         Returns:
-            List[Tuple]: list of tuple of blockwise demand data [(timestamp,entityTag,demandValue),]
+            List[Tuple]: list of tuple of forecasted blockwise demand data [(timestamp,entityTag,demandValue),]
         """    
         data:List[Tuple] = []
         for ind in df.index:
@@ -84,6 +97,7 @@ class DemandFetchForAlgoRepo():
         else:
             print(connection.version)
             try:
+                #iterating through each entity and generating DA forecast
                 for entity in listOfEntity:
                     cur = connection.cursor()
                     fetch_sql = "SELECT time_stamp, demand_value FROM staging_blockwise_demand WHERE time_stamp BETWEEN TO_DATE(:start_time) and TO_DATE(:end_time) and entity_tag = :tag ORDER BY time_stamp"
@@ -96,6 +110,7 @@ class DemandFetchForAlgoRepo():
                                         'start_time': dMinus9_startTime, 'end_time': dMinus9_endTime, 'tag': entity}, con=connection)
                     dMinus14Df = pd.read_sql(fetch_sql, params={
                                         'start_time': dMinus14_startTime, 'end_time': dMinus14_endTime, 'tag': entity}, con=connection)
+                   # deleting timestamp column and renaming demand_value column of each df
                     del dMinus2Df['TIME_STAMP']
                     del dMinus7Df['TIME_STAMP']
                     del dMinus9Df['TIME_STAMP']
@@ -104,8 +119,11 @@ class DemandFetchForAlgoRepo():
                     dMinus7Df.rename(columns = {'DEMAND_VALUE':'dMinus7DemandValue'}, inplace = True)
                     dMinus9Df.rename(columns = {'DEMAND_VALUE':'dMinus9DemandValue'}, inplace = True)
                     dMinus14Df.rename(columns = {'DEMAND_VALUE':'dMinus14DemandValue'}, inplace = True) 
+                    #concatenating d-2,d-7,d-9,d-14 demand value of particular entity horizontaly
                     demandConcatDf = pd.concat([dMinus2Df,dMinus7Df,dMinus9Df,dMinus14Df], axis=1)
+                    #apply forecasting algorithm
                     forecastedDf = self.applyDayAheadForecast(demandConcatDf,entity,currDateKey )
+                    #storageForecastedDf store forecasted value of each entity
                     self.storageForecastedDf = pd.concat([self.storageForecastedDf, forecastedDf],ignore_index=True)
                     
             except Exception as err:

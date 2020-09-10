@@ -53,7 +53,6 @@ class StagingBlockWiseDemandInsertionRepo():
                         print('insert')
                         cur.executemany(insert_sql, data)
                         
-
                 except Exception as e:
                     print("error while insertion/deletion->", e)
                     isInsertionSuccess = False
@@ -65,5 +64,5 @@ class StagingBlockWiseDemandInsertionRepo():
         finally:
             cur.close()
             connection.close()
-            print("staging blockwise demand data processing complete")
+            print("staging blockwise demand data insertion complete")
         return isInsertionSuccess

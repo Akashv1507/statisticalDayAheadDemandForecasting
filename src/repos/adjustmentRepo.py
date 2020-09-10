@@ -7,8 +7,8 @@ from src.utils.checkSpecialDay import checkSpecialDay
 
 
 class Adjustment():
-    
-
+    """adjustment repo to check D-2 is special or not based on which modification takes place
+    """    
     def __init__(self, con_string: str) -> None:
         """initialize connection string
         Args:
@@ -37,7 +37,6 @@ class Adjustment():
 
         except Exception as err:
             print('error while creating a connection',err)
-
         else:
             print(connection.version)
             try:
@@ -108,7 +107,7 @@ class Adjustment():
         finally:
             cur.close()
             connection.close()
-            # print("staging blockwise demand data insertion complete")
+            print("D-2 data is replaced")
         return isInsertionSuccess
 
 

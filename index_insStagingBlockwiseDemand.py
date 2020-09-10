@@ -32,10 +32,10 @@ endDate = endDate.replace(hour=0, minute=0, second=0, microsecond=0)
 
 print('startDate = {0}, endDate = {1}'.format(dt.strftime(
     startDate, '%Y-%m-%d'), dt.strftime(endDate, '%Y-%m-%d')))
-print(wantUpdation)
-# create raw freq between start and end dates
+# print(wantUpdation)
+# create staging blockwise demand between start and end dates
 isRawDataCreationSuccess = createStagingBlockWiseDemand(startDate,endDate,configDict,wantUpdation)
 if isRawDataCreationSuccess:
-    print(' blockwise demand data creation done...')
+    print(' staging blockwise demand data creation done...')
 else:
-    print(' blockwise demand data creation failure...')
+    print(' staging blockwise demand data creation failure...')

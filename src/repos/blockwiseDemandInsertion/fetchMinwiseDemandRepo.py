@@ -5,7 +5,7 @@ from typing import List, Tuple
 
 
 class MinwiseDemandFetchRepo():
-    """minute wisee demand fetch repository
+    """minute wise demand fetch repository
     """
 
     def __init__(self, con_string):

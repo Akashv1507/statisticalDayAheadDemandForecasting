@@ -55,5 +55,5 @@ class BlockWiseDemandInsertionRepo():
         finally:
             cur.close()
             connection.close()
-            print("blockwise demand data inserrtion complete")
+            print("blockwise demand data insertion complete")
         return isInsertionSuccess
