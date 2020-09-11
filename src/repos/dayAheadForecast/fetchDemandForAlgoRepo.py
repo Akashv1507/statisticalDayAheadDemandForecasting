@@ -33,13 +33,15 @@ class DemandFetchForAlgoRepo():
         dateOfForecast = currDate + dt.timedelta(days=1)
         #calculating parameters A,B,C,avg
         demandDf['A']= (demandDf['dMinus7DemandValue']-demandDf['dMinus2DemandValue'])/demandDf['dMinus2DemandValue']
-        demandDf['B']= (demandDf['dMinus9DemandValue']-demandDf['dMinus7DemandValue'])/demandDf['dMinus9DemandValue']
-        demandDf['C']= (demandDf['dMinus9DemandValue']-demandDf['dMinus14DemandValue'])/demandDf['dMinus9DemandValue']
+        demandDf['B']= (demandDf['dMinus7DemandValue']-demandDf['dMinus9DemandValue'])/demandDf['dMinus9DemandValue']
+        demandDf['C']= (demandDf['dMinus14DemandValue']-demandDf['dMinus9DemandValue'])/demandDf['dMinus9DemandValue']
         demandDf['avg'] = demandDf[['A', 'B', 'C']].mean(axis=1)
         #forecasting logic
         demandDf['forecastedDemand'] = (1+demandDf['avg'])*demandDf['dMinus2DemandValue']
+        # print(demandDf)
         demandDf['timestamp'] = pd.date_range(start=dateOfForecast,freq='15min',periods=96)
         demandDf['entityTag'] = entity
+        
         #selecting only timestamp, entityTag, and forecasted demand columns from demandDf
         forecastedDf = demandDf[['timestamp', 'entityTag', 'forecastedDemand']]
         return forecastedDf
@@ -75,7 +77,7 @@ class DemandFetchForAlgoRepo():
         dMinus7 = currDateKey-dt.timedelta(days=6)
         dMinus9 = currDateKey-dt.timedelta(days=8)
         dMinus14 = currDateKey-dt.timedelta(days=13)
-        # print(dMinus2,dMinus7,dMinus9,dMinus14)
+        print(dMinus2,dMinus7,dMinus9,dMinus14)
 
         dMinus2_startTime = dMinus2
         dMinus2_endTime = dMinus2 + dt.timedelta(hours= 23,minutes=45)
@@ -87,7 +89,8 @@ class DemandFetchForAlgoRepo():
         dMinus14_endTime = dMinus14 + dt.timedelta(hours= 23,minutes=45)
         
         listOfEntity =['WRLDCMP.SCADA1.A0046945','WRLDCMP.SCADA1.A0046948','WRLDCMP.SCADA1.A0046953','WRLDCMP.SCADA1.A0046957','WRLDCMP.SCADA1.A0046962','WRLDCMP.SCADA1.A0046978','WRLDCMP.SCADA1.A0046980','WRLDCMP.SCADA1.A0047000']
-
+        # listOfEntity =['WRLDCMP.SCADA1.A0046980']
+        # listOfEntity =['WRLDCMP.SCADA1.A0046945']
         try:
             # connString=configDict['con_string_local']
             connection = cx_Oracle.connect(self.connString)
@@ -134,9 +137,9 @@ class DemandFetchForAlgoRepo():
             cur.close()
             connection.close()
             print("connection closed")
-
-        self.storageForecastedDf.to_excel(r'D:\wrldc_projects\demand_forecasting\filtering demo\10-sept forecast.xlsx')
+        # self.storageForecastedDf.to_excel(r'D:\wrldc_projects\demand_forecasting\filtering demo\07-sept-2 forecast.xlsx')
         data : List[Tuple] = self.toListOfTuple(self.storageForecastedDf)
         return data
 
+         
         

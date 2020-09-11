@@ -6,7 +6,7 @@ from src.derivedDataCreator.dayAheadForecastCreator import createDayAheadForecas
 
 configDict=getAppConfigDict()
 
-endDate = dt.now() - timedelta(days=1)
+endDate = dt.now()
 # startDate = endDate - timedelta(days=2)
 startDate = endDate
 

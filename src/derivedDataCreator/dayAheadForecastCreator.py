@@ -30,6 +30,7 @@ def createDayAheadForecast(startDate:dt.datetime ,endDate: dt.datetime, configDi
     while currDate <= endDate:
 
         data:List[Tuple] = obj_demandFetchForAlgo.fetchBlockwiseDemandForAlgo(currDate)
+        # print(data)
         isInsertionSuccess = obj_dayAheadDemandForecastInsertion.insertDayAheadDemandForecast(data)
         if isInsertionSuccess:
             insertSuccessCount = insertSuccessCount + 1

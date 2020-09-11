@@ -96,6 +96,7 @@ class MinwiseDemandFetchRepo():
         print("retrieval of minwsie demand completed")
 
         blockwiseDf = self.toBlockwiseDemand(minwiseDemandDf)
+        # blockwiseDf.to_excel(r'D:\wrldc_projects\demand_forecasting\filtering demo\10-sept demand.xlsx')
         data : List[Tuple] = self.toListOfTuple(blockwiseDf)
         return data
 

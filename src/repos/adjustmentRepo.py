@@ -131,14 +131,16 @@ class Adjustment():
             if prevDate.strftime("%A") == 'Sunday' :
                 isAdjustmentSuccess:bool = self.doReplacement(prevDate,prevSunday)
                 print("a")
+                return isAdjustmentSuccess
             elif dMinus3.strftime("%A") == 'Sunday':
                 isAdjustmentSuccess:bool = self.doReplacement(prevDate , dMinus4)
                 print("b")
+                return isAdjustmentSuccess
             else:
                 isAdjustmentSuccess:bool=self.doReplacement(prevDate,dMinus3)
-                print("c")
-            
-        return isAdjustmentSuccess
+                print("c")     
+                return isAdjustmentSuccess
+        return True
         
 
 
