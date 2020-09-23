@@ -1,8 +1,12 @@
 import cx_Oracle
 import pandas as pd
 import datetime as dt
-from typing import List, Tuple
+from typing import List, Tuple, TypedDict
 
+
+class IResultDict(TypedDict):
+    demandData: List[Tuple]
+    roData: List[Tuple]
 
 class DemandFetchForAlgoRepo():
     """fetch D-2,D-7,D-9,D-14 demand and apply day ahead demand forecasting algorithm.
@@ -48,7 +52,7 @@ class DemandFetchForAlgoRepo():
 
 
 
-    def toListOfTuple(self,df:pd.core.frame.DataFrame) -> List[Tuple]:
+    def toListOfTuple(self,df:pd.core.frame.DataFrame) -> IResultDict:
         """convert forecasted BLOCKWISE demand data to list of tuples[(timestamp,entityTag,demandValue),]
 
         Args:
@@ -56,15 +60,22 @@ class DemandFetchForAlgoRepo():
 
         Returns:
             List[Tuple]: list of tuple of forecasted blockwise demand data [(timestamp,entityTag,demandValue),]
-        """    
-        data:List[Tuple] = []
+        """ 
+        # df['revisionNo'] = 'R0'
+        demandData:List[Tuple] = []
+        r0Data:List[Tuple] = []  
+        resultDict:IResultDict ={'demandData': demandData, 'r0Data': r0Data}
+        
+
         for ind in df.index:
-            tempTuple = (str(df['timestamp'][ind]), df['entityTag'][ind], float(df['forecastedDemand'][ind]) )
-            data.append(tempTuple)
-        return data
+            demandTuple = (str(df['timestamp'][ind]), df['entityTag'][ind], float(df['forecastedDemand'][ind]) )
+            demandData.append(demandTuple)
+            r0Tuple = (str(df['timestamp'][ind]), df['entityTag'][ind],'R0', float(df['forecastedDemand'][ind]) )
+            r0Data.append(r0Tuple)
+        return resultDict
  
 
-    def fetchBlockwiseDemandForAlgo(self, currDateKey: dt.datetime) -> List[Tuple]:
+    def fetchBlockwiseDemandForAlgo(self, currDateKey: dt.datetime) -> IResultDict:
         """"fetch D-2,D-7,D-9,D-14 demand and apply day ahead demand forecasting algorithm, return list of tuple[(timestamp,entityTag,demandValue),]
         Args:
             self: object of class 
@@ -138,8 +149,8 @@ class DemandFetchForAlgoRepo():
             connection.close()
             print("connection closed")
         # self.storageForecastedDf.to_excel(r'D:\wrldc_projects\demand_forecasting\filtering demo\07-sept-2 forecast.xlsx')
-        data : List[Tuple] = self.toListOfTuple(self.storageForecastedDf)
-        return data
+        resultDict:IResultDict  = self.toListOfTuple(self.storageForecastedDf)
+        return resultDict
 
          
         
