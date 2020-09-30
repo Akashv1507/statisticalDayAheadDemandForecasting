@@ -39,9 +39,9 @@ class R0RevisionInsertion():
                 cur = connection.cursor()
                 try:
                     cur.execute("ALTER SESSION SET NLS_DATE_FORMAT = 'YYYY-MM-DD HH24:MI:SS' ")
-                    del_sql = "DELETE FROM forecast_revision WHERE time_stamp = :1 and entity_tag=:2 and revision_no =:3"
+                    del_sql = "DELETE FROM forecast_revision_store WHERE time_stamp = :1 and entity_tag=:2 and revision_no =:3"
                     cur.executemany(del_sql, existingRows)
-                    insert_sql = "INSERT INTO forecast_revision(time_stamp,ENTITY_TAG,revision_no,forecasted_demand_value) VALUES(:1, :2, :3, :4)"
+                    insert_sql = "INSERT INTO forecast_revision_store(time_stamp,ENTITY_TAG,revision_no,forecasted_demand_value) VALUES(:1, :2, :3, :4)"
                     cur.executemany(insert_sql, data)
                 except Exception as e:
                     print("error while insertion/deletion->", e)
