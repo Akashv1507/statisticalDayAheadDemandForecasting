@@ -54,5 +54,5 @@ class R0RevisionInsertion():
         finally:
             cur.close()
             connection.close()
-            print("dayahead(r0) demand forecast insertion complete")
+            print("dayahead(r0A) demand forecast insertion complete")
         return isInsertionSuccess
