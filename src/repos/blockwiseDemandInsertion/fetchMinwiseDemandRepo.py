@@ -70,20 +70,16 @@ class MinwiseDemandFetchRepo():
         start_time_value = startDate + " 00:00:00"
         end_time_value = endDate + " 23:59:00"
         try:
-            # connString=configDict['con_string_local']
             connection = cx_Oracle.connect(self.connString)
-
         except Exception as err:
             print('error while creating a connection', err)
-        else:
-            print(connection.version)
+        else:  
             try:
                 cur = connection.cursor()
                 fetch_sql = "SELECT time_stamp, entity_tag, demand_value FROM raw_minwise_demand WHERE time_stamp BETWEEN TO_DATE(:start_time,'YYYY-MM-DD HH24:MI:SS') and TO_DATE(:end_time,'YYYY-MM-DD HH24:MI:SS') ORDER BY time_stamp"
                 # cur.execute("ALTER SESSION SET NLS_DATE_FORMAT = 'YYYY-MM-DD HH24:MI:SS' ")
                 minwiseDemandDf = pd.read_sql(fetch_sql, params={
                                  'start_time': start_time_value, 'end_time': end_time_value}, con=connection)
-
             except Exception as err:
                 print('error while creating a cursor', err)
             else:
@@ -91,12 +87,9 @@ class MinwiseDemandFetchRepo():
         finally:
             cur.close()
             connection.close()
-            print("connection closed")
-
         print("retrieval of minwsie demand completed")
 
         blockwiseDf = self.toBlockwiseDemand(minwiseDemandDf)
-        # blockwiseDf.to_excel(r'D:\wrldc_projects\demand_forecasting\filtering demo\10-sept demand.xlsx')
         data : List[Tuple] = self.toListOfTuple(blockwiseDf)
         return data
 

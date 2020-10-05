@@ -28,7 +28,7 @@ endDate = endDate.replace(hour=0, minute=0, second=0, microsecond=0)
 print('startDate = {0}, endDate = {1}'.format(dt.strftime(
     startDate, '%Y-%m-%d'), dt.strftime(endDate, '%Y-%m-%d')))
 
-# create minwise demand between start and end dates
+# create minwise demand and purity percentage between start and end dates
 isRawDataCreationSuccess = createMinWiseDemand_purityPercent(startDate,endDate,configDict)
 
 if isRawDataCreationSuccess:

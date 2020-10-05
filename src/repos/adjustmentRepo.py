@@ -38,7 +38,6 @@ class Adjustment():
         except Exception as err:
             print('error while creating a connection',err)
         else:
-            print(connection.version)
             try:
                 cur=connection.cursor()
                 fetch_sql_dateToReplaced ='''select time_stamp,entity_tag,demand_value
@@ -67,8 +66,6 @@ class Adjustment():
         # replace demand value of D-2
         dfToReplaced['DEMAND_VALUE'] = dfByReplaced['DEMAND_VALUE']
 
-        # print(dfToReplaced)
-        # print(dfByReplaced)
         # creating list of tuple for insertion in db
         data:List[Tuple] = []
         for ind in dfToReplaced.index:
@@ -87,7 +84,6 @@ class Adjustment():
         except Exception as err:
             print('error while creating a connection', err)
         else:
-            print(connection.version)
             try:
                 cur = connection.cursor()
                 try:
@@ -129,16 +125,15 @@ class Adjustment():
 
         if checkSpecialDay(prevDate):
             if prevDate.strftime("%A") == 'Sunday' :
-                isAdjustmentSuccess:bool = self.doReplacement(prevDate,prevSunday)
-                print("a")
+                isAdjustmentSuccess:bool = self.doReplacement(prevDate, prevSunday)
                 return isAdjustmentSuccess
+
             elif dMinus3.strftime("%A") == 'Sunday':
-                isAdjustmentSuccess:bool = self.doReplacement(prevDate , dMinus4)
-                print("b")
+                isAdjustmentSuccess:bool = self.doReplacement(prevDate, dMinus4)
                 return isAdjustmentSuccess
+
             else:
-                isAdjustmentSuccess:bool=self.doReplacement(prevDate,dMinus3)
-                print("c")     
+                isAdjustmentSuccess:bool=self.doReplacement(prevDate, dMinus3)    
                 return isAdjustmentSuccess
         return True
         

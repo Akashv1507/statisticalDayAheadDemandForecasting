@@ -2,11 +2,7 @@ import cx_Oracle
 import pandas as pd
 import datetime as dt
 from typing import List, Tuple, TypedDict
-
-
-class IResultDict(TypedDict):
-    demandData: List[Tuple]
-    roData: List[Tuple]
+from src.typeDefs.dayaheadForecast import IResultDict
 
 class DemandFetchForAlgoRepo():
     """fetch D-2,D-7,D-9,D-14 demand and apply day ahead demand forecasting algorithm.
@@ -63,15 +59,14 @@ class DemandFetchForAlgoRepo():
         """ 
         # df['revisionNo'] = 'R0'
         demandData:List[Tuple] = []
-        r0Data:List[Tuple] = []  
-        resultDict:IResultDict ={'demandData': demandData, 'r0Data': r0Data}
-        
-
+        r0AData:List[Tuple] = []  
+        resultDict:IResultDict ={'demandData': demandData, 'r0AData': r0AData}
+    
         for ind in df.index:
             demandTuple = (str(df['timestamp'][ind]), df['entityTag'][ind], float(df['forecastedDemand'][ind]) )
             demandData.append(demandTuple)
             r0Tuple = (str(df['timestamp'][ind]), df['entityTag'][ind],'R0A', float(df['forecastedDemand'][ind]) )
-            r0Data.append(r0Tuple)
+            r0DAata.append(r0Tuple)
         return resultDict
  
 
@@ -88,7 +83,7 @@ class DemandFetchForAlgoRepo():
         dMinus7 = currDateKey-dt.timedelta(days=6)
         dMinus9 = currDateKey-dt.timedelta(days=8)
         dMinus14 = currDateKey-dt.timedelta(days=13)
-        print(dMinus2,dMinus7,dMinus9,dMinus14)
+        # print(dMinus2,dMinus7,dMinus9,dMinus14)
 
         dMinus2_startTime = dMinus2
         dMinus2_endTime = dMinus2 + dt.timedelta(hours= 23,minutes=45)
@@ -100,16 +95,12 @@ class DemandFetchForAlgoRepo():
         dMinus14_endTime = dMinus14 + dt.timedelta(hours= 23,minutes=45)
         
         listOfEntity =['WRLDCMP.SCADA1.A0046945','WRLDCMP.SCADA1.A0046948','WRLDCMP.SCADA1.A0046953','WRLDCMP.SCADA1.A0046957','WRLDCMP.SCADA1.A0046962','WRLDCMP.SCADA1.A0046978','WRLDCMP.SCADA1.A0046980','WRLDCMP.SCADA1.A0047000']
-        # listOfEntity =['WRLDCMP.SCADA1.A0046980']
-        # listOfEntity =['WRLDCMP.SCADA1.A0046945']
         try:
-            # connString=configDict['con_string_local']
             connection = cx_Oracle.connect(self.connString)
 
         except Exception as err:
             print('error while creating a connection', err)
         else:
-            print(connection.version)
             try:
                 #iterating through each entity and generating DA forecast
                 for entity in listOfEntity:
@@ -147,8 +138,6 @@ class DemandFetchForAlgoRepo():
         finally:
             cur.close()
             connection.close()
-            print("connection closed")
-        # self.storageForecastedDf.to_excel(r'D:\wrldc_projects\demand_forecasting\filtering demo\07-sept-2 forecast.xlsx')
         resultDict:IResultDict  = self.toListOfTuple(self.storageForecastedDf)
         return resultDict
 

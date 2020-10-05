@@ -36,7 +36,6 @@ class StagingBlockWiseDemandInsertionRepo():
         except Exception as err:
             print('error while creating a connection', err)
         else:
-            print(connection.version)
             try:
                 cur = connection.cursor()
                 try:
@@ -44,13 +43,12 @@ class StagingBlockWiseDemandInsertionRepo():
                     del_sql = "DELETE FROM staging_blockwise_demand WHERE time_stamp = :1 and entity_tag=:2"
                     insert_sql = "INSERT INTO staging_blockwise_demand(time_stamp,ENTITY_TAG,demand_value) VALUES(:1, :2, :3)"
 
+                    #upsert
                     if self.wantUpdation:
-                        print("upsert")
                         cur.executemany(del_sql, existingRows)
                         cur.executemany(insert_sql, data)
-                        
-                    else:
-                        print('insert')
+                    #insert    
+                    else:  
                         cur.executemany(insert_sql, data)
                         
                 except Exception as e:

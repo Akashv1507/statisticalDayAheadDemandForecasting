@@ -1,16 +1,9 @@
 import pandas as pd
 import datetime as dt
 from typing import List, Tuple, TypedDict
-
 from src.fetchers.scadaApiFetcher import ScadaApiFetcher
+from src.typeDefs.rawMinwiseDemand import Idemand_purity_dict, IresultFormat
 
-class IresultFormat(TypedDict):
-    demandDf : pd.core.frame.DataFrame
-    purityPercent : Tuple
-
-class Idemand_purity_dict(TypedDict):
-    data: List[Tuple]
-    purityPercentage: List[Tuple]
 
 def toMinuteWiseData(demandDf:pd.core.frame.DataFrame, entity:str)->pd.core.frame.DataFrame:
     """convert random secondwise demand dataframe to minwise demand dataframe and add entity column to dataframe.
@@ -30,14 +23,14 @@ def toMinuteWiseData(demandDf:pd.core.frame.DataFrame, entity:str)->pd.core.fram
     demandDf.reset_index(inplace=True)
     return demandDf
 
-def filterAction(demandDf, currDate, entity, minRamp)-> dict:
+def filterAction(demandDf :pd.core.frame.DataFrame, currDate:dt.datetime, entity:str, minRamp:int)-> IresultFormat:
     """ apply filtering action and generate purity percentage tuple
 
     Args:
-        demandDf ([type]): unfiltered demand df
-        currDate ([type]): date for which demand data is fetched from api for particular entity
-        entity ([type]): entity name
-        minRamp ([type]): threshold deviation value for min-min ramping
+        demandDf (pd.core.frame.DataFrame): unfiltered demand df
+        currDate (dt.datetime): date for which demand data is fetched from api for particular entity
+        entity (str): entity name
+        minRamp (int): threshold deviation value for min-min ramping
 
     Returns:
         dict: resultDict['demandDf'] = filtered demandDf
@@ -55,8 +48,6 @@ def filterAction(demandDf, currDate, entity, minRamp)-> dict:
         print('error while calculating purity percentage', err)
     purityPercentTuple = (currDate,entity,purityPercent )
    
-    # resultDict['demandDf'] = demandDf
-    # resultDict['purityPercent'] = purityPercentTuple
     resultDict:IresultFormat = {
         'demandDf': demandDf,
         'purityPercent': purityPercentTuple
@@ -64,13 +55,13 @@ def filterAction(demandDf, currDate, entity, minRamp)-> dict:
     return resultDict
     
 
-def applyFilteringToDf(demandDf, entity, currDate) -> dict:
+def applyFilteringToDf(demandDf : pd.core.frame.DataFrame, entity:str, currDate: dt.datetime) -> IresultFormat:
     """ apply filtering logic to each entity demand data and returns dictionary
 
     Args:
-        demandDf ([type]): demand dataframe
-        entity ([type]): entity name
-        currDate ([type]): date for which demand data is fetched from api for particular entity
+        demandDf (pd.core.frame.DataFrame): demand dataframe
+        entity (str): entity name
+        currDate (dt.datetime): date for which demand data is fetched from api for particular entity
 
     Returns:
         dict: resultDict['demandDf'] = filtered demandDf
@@ -105,7 +96,7 @@ def toListOfTuple(df:pd.core.frame.DataFrame) -> List[Tuple]:
     return data
 
 
-def fetchDemandDataFromApi(currDate: dt.datetime, configDict: dict)-> dict:
+def fetchDemandDataFromApi(currDate: dt.datetime, configDict: dict)-> Idemand_purity_dict:
     """fetches demand data from api-> convert to 1 min data, generate purity percent list -> returns dictionary
 
     Args:
@@ -138,15 +129,9 @@ def fetchDemandDataFromApi(currDate: dt.datetime, configDict: dict)-> dict:
         #converting to minutewise data and adding entityName column to dataframe
         demandDf = toMinuteWiseData(demandDf,entity)
         
-        # if entity == 'WRLDCMP.SCADA1.A0046980':
-        #     demandDf.to_excel(r'D:\wrldc_projects\demand_forecasting\filtering demo\mah-29-aug.xlsx')
-
         #applying filtering logic
         date_key = currDate.date()
         resultDict : IresultFormat = applyFilteringToDf(demandDf,entity, str(date_key))
-
-        # if entity == 'WRLDCMP.SCADA1.A0046980':
-        #     resultDict['demandDf'].to_excel(r'D:\wrldc_projects\demand_forecasting\filtering demo\mah-29-aug1.xlsx')
 
         #appending purity percentage of each entity to list 
         purityPercentageList.append(resultDict['purityPercent'])
@@ -154,7 +139,7 @@ def fetchDemandDataFromApi(currDate: dt.datetime, configDict: dict)-> dict:
         #appending per min demand data for each entity to tempDf
         storageDf = pd.concat([storageDf, resultDict['demandDf']],ignore_index=True)
 
-    # converting tempdf(contain per min demand values of all entities) to list of tuple 
+    # converting storageDf(contain per min demand values of all entities) to list of tuple 
     data:List[Tuple] = toListOfTuple(storageDf)
     
     demand_purity_dict : Idemand_purity_dict = { 'data': data, 'purityPercentage': purityPercentageList}

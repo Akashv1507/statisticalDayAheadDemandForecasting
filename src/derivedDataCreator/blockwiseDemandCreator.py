@@ -3,7 +3,7 @@ from typing import List, Tuple
 from src.repos.blockwiseDemandInsertion.fetchMinwiseDemandRepo import MinwiseDemandFetchRepo
 from src.repos.blockwiseDemandInsertion.insertBlockwiseDemandRepo import BlockWiseDemandInsertionRepo
 
-def createBlockWiseDemand(startDate:dt.datetime ,endDate: dt.datetime,configDict:dict)->bool:
+def createBlockWiseDemand(startDate:dt.datetime, endDate: dt.datetime, configDict:dict)->bool:
     """ create blockwise demand data 
 
     Args:
@@ -15,7 +15,6 @@ def createBlockWiseDemand(startDate:dt.datetime ,endDate: dt.datetime,configDict
         bool: return true if insertion is success.
     """    
 
-    
     conString:str = configDict['con_string_mis_warehouse']
 
     #creating instance of classes

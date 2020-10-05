@@ -8,7 +8,7 @@ from src.derivedDataCreator.stagingBlockwiseDemandCreator import createStagingBl
 configDict=getAppConfigDict()
 
 endDate = dt.now() - timedelta(days=1)
-# startDate = endDate - timedelta(days=2)
+
 startDate = endDate
 
 # by default want updation will be False 
@@ -32,7 +32,7 @@ endDate = endDate.replace(hour=0, minute=0, second=0, microsecond=0)
 
 print('startDate = {0}, endDate = {1}'.format(dt.strftime(
     startDate, '%Y-%m-%d'), dt.strftime(endDate, '%Y-%m-%d')))
-# print(wantUpdation)
+
 # create staging blockwise demand between start and end dates
 isRawDataCreationSuccess = createStagingBlockWiseDemand(startDate,endDate,configDict,wantUpdation)
 if isRawDataCreationSuccess:

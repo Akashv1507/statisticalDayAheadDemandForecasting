@@ -16,7 +16,6 @@ def createStagingBlockWiseDemand(startDate:dt.datetime ,endDate: dt.datetime, co
         bool: return true if insertion is success.
     """    
 
-    
     conString:str = configDict['con_string_mis_warehouse']
 
     #creating instance of classes

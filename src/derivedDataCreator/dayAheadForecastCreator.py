@@ -3,11 +3,7 @@ from typing import List, Tuple, TypedDict
 from src.repos.dayAheadForecast.fetchDemandForAlgoRepo import DemandFetchForAlgoRepo
 from src.repos.dayAheadForecast.dayAheadForecastInsertionRepo import DayAheadDemandForecastInsertion
 from src.repos.dayAheadForecast.r0RevisionInsertionRepo import R0RevisionInsertion
-
-
-class IResultDict(TypedDict):
-    demandData: List[Tuple]
-    roData: List[Tuple]
+from src.typeDefs.dayaheadForecast import IResultDict
 
 def createDayAheadForecast(startDate:dt.datetime ,endDate: dt.datetime, configDict:dict)->bool:
     """ create  blockwise day ahead forecasted demand data and r0 forecast 
