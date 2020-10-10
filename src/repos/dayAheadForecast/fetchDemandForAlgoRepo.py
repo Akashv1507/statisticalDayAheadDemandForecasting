@@ -66,7 +66,7 @@ class DemandFetchForAlgoRepo():
             demandTuple = (str(df['timestamp'][ind]), df['entityTag'][ind], float(df['forecastedDemand'][ind]) )
             demandData.append(demandTuple)
             r0Tuple = (str(df['timestamp'][ind]), df['entityTag'][ind],'R0A', float(df['forecastedDemand'][ind]) )
-            r0DAata.append(r0Tuple)
+            r0AData.append(r0Tuple)
         return resultDict
  
 

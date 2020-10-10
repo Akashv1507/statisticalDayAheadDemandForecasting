@@ -38,7 +38,7 @@ def createDayAheadForecast(startDate:dt.datetime ,endDate: dt.datetime, configDi
         if isForecastedDemandInsSuccess:
             demandInsertionSuccessCount = demandInsertionSuccessCount + 1
         
-        isR0InsertionSuccess = obj_r0ForecastInsertion.insertR0DemandForecast(resultDict['r0Data'])
+        isR0InsertionSuccess = obj_r0ForecastInsertion.insertR0DemandForecast(resultDict['r0AData'])
         if isR0InsertionSuccess:
             r0InsertionSuccessCount += 1
 

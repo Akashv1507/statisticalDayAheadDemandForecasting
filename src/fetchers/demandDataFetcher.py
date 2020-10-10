@@ -139,6 +139,7 @@ def fetchDemandDataFromApi(currDate: dt.datetime, configDict: dict)-> Idemand_pu
         #appending per min demand data for each entity to tempDf
         storageDf = pd.concat([storageDf, resultDict['demandDf']],ignore_index=True)
 
+    storageDf.to_excel(r'D:\wrldc_projects\demand_forecasting\filtering demo\dpi-1043.xlsx')
     # converting storageDf(contain per min demand values of all entities) to list of tuple 
     data:List[Tuple] = toListOfTuple(storageDf)
     

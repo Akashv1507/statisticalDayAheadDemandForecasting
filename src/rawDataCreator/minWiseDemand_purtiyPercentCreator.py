@@ -36,7 +36,7 @@ def createMinWiseDemand_purityPercent(startDate:dt.datetime ,endDate: dt.datetim
         isInsertionSuccessPurity = obj_purityPercentageInsRepo.insertPurityPercentage(demand_purity_dict['purityPercentage'])
         if isInsertionSuccessPurity:
             puritySuccessCount = puritySuccessCount + 1
-
+        
         isInsertionSuccessMinWiseDemand = obj_minWiseInsertionRepo.insertMinWiseDemand(demand_purity_dict['data'])
         if isInsertionSuccessMinWiseDemand:
             demandSuccessCount = demandSuccessCount + 1
