@@ -87,7 +87,6 @@ class MinwiseDemandFetchRepo():
         finally:
             cur.close()
             connection.close()
-        print("retrieval of minwsie demand completed")
 
         blockwiseDf = self.toBlockwiseDemand(minwiseDemandDf)
         data : List[Tuple] = self.toListOfTuple(blockwiseDf)

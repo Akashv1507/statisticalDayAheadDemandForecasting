@@ -112,12 +112,14 @@ def fetchDemandDataFromApi(currDate: dt.datetime, configDict: dict)-> Idemand_pu
     apiBaseUrl: str = configDict['apiBaseUrl']
     clientId = configDict['clientId']
     clientSecret = configDict['clientSecret']
-
     purityPercentageList:List[Tuple] = []
+    
     #initializing temporary empty dataframe that append demand values of all entities
     storageDf = pd.DataFrame(columns = [ 'timestamp','entityTag','demandValue']) 
+
     #list of all entities
     listOfEntity =['WRLDCMP.SCADA1.A0046945','WRLDCMP.SCADA1.A0046948','WRLDCMP.SCADA1.A0046953','WRLDCMP.SCADA1.A0046957','WRLDCMP.SCADA1.A0046962','WRLDCMP.SCADA1.A0046978','WRLDCMP.SCADA1.A0046980','WRLDCMP.SCADA1.A0047000']
+    
     #creating object of ScadaApiFetcher class 
     obj_scadaApiFetcher = ScadaApiFetcher(tokenUrl, apiBaseUrl, clientId, clientSecret)
 
@@ -128,6 +130,10 @@ def fetchDemandDataFromApi(currDate: dt.datetime, configDict: dict)-> Idemand_pu
 
         #converting to minutewise data and adding entityName column to dataframe
         demandDf = toMinuteWiseData(demandDf,entity)
+
+        # handling missing values NANs
+        demandDf['demandValue'].fillna(method='ffill', inplace= True)
+        demandDf['demandValue'].fillna(method='bfill', inplace= True)
         
         #applying filtering logic
         date_key = currDate.date()
@@ -139,7 +145,7 @@ def fetchDemandDataFromApi(currDate: dt.datetime, configDict: dict)-> Idemand_pu
         #appending per min demand data for each entity to tempDf
         storageDf = pd.concat([storageDf, resultDict['demandDf']],ignore_index=True)
 
-    storageDf.to_excel(r'D:\wrldc_projects\demand_forecasting\filtering demo\dpi-1043.xlsx')
+    
     # converting storageDf(contain per min demand values of all entities) to list of tuple 
     data:List[Tuple] = toListOfTuple(storageDf)
     

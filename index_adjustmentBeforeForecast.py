@@ -32,6 +32,6 @@ print('startDate = {0}, endDate = {1}'.format(dt.strftime(
 # do adjustment between start and end dates
 isRawDataCreationSuccess = doAdjustmentBeforeForecast(startDate, endDate, configDict)
 if isRawDataCreationSuccess:
-    print(' ajustment success...')
+    print(' adjustment success...')
 else:
-    print(' ajustment  failure...')
+    print(' adjustment  failure...')

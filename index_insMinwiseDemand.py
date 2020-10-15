@@ -4,8 +4,6 @@ from datetime import timedelta
 from src.appConfig import getAppConfigDict
 from src.rawDataCreator.minWiseDemand_purtiyPercentCreator import createMinWiseDemand_purityPercent
 
-
-
 configDict=getAppConfigDict()
 
 endDate = dt.now() - timedelta(days=1)
