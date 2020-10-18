@@ -15,9 +15,7 @@ class DemandFetchForAlgoRepo():
         """
         self.connString = con_string
         self.storageForecastedDf = pd.DataFrame(columns = [ 'timestamp','entityTag','forecastedDemand']) 
-        
-
-    
+         
     def applyDayAheadForecast(self, demandDf:pd.core.frame.DataFrame, entity:str,currDate:dt.datetime)->pd.core.frame.DataFrame:
         """applying DA forecasting algorithm
 
@@ -45,8 +43,6 @@ class DemandFetchForAlgoRepo():
         #selecting only timestamp, entityTag, and forecasted demand columns from demandDf
         forecastedDf = demandDf[['timestamp', 'entityTag', 'forecastedDemand']]
         return forecastedDf
-
-
 
     def toListOfTuple(self,df:pd.core.frame.DataFrame) -> IResultDict:
         """convert forecasted BLOCKWISE demand data to list of tuples[(timestamp,entityTag,demandValue),]
@@ -120,6 +116,7 @@ class DemandFetchForAlgoRepo():
                     del dMinus7Df['TIME_STAMP']
                     del dMinus9Df['TIME_STAMP']
                     del dMinus14Df['TIME_STAMP']
+
                     dMinus2Df.rename(columns = {'DEMAND_VALUE':'dMinus2DemandValue'}, inplace = True)
                     dMinus7Df.rename(columns = {'DEMAND_VALUE':'dMinus7DemandValue'}, inplace = True)
                     dMinus9Df.rename(columns = {'DEMAND_VALUE':'dMinus9DemandValue'}, inplace = True)
@@ -138,6 +135,7 @@ class DemandFetchForAlgoRepo():
         finally:
             cur.close()
             connection.close()
+        
         resultDict:IResultDict  = self.toListOfTuple(self.storageForecastedDf)
         return resultDict
 
