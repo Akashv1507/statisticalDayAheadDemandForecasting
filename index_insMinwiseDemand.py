@@ -7,8 +7,8 @@ from src.rawDataCreator.minWiseDemand_purtiyPercentCreator import createMinWiseD
 configDict=getAppConfigDict()
 
 endDate = dt.now() - timedelta(days=1)
-# startDate = endDate - timedelta(days=2)
-startDate = endDate
+startDate = endDate - timedelta(days=1)
+# startDate = endDate
 
 # get start and end dates from command line
 parser = argparse.ArgumentParser()

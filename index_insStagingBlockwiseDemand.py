@@ -8,8 +8,8 @@ from src.derivedDataCreator.stagingBlockwiseDemandCreator import createStagingBl
 configDict=getAppConfigDict()
 
 endDate = dt.now() - timedelta(days=1)
-
-startDate = endDate
+startDate = endDate - timedelta(days=1)
+# startDate = endDate
 
 # by default want updation will be False 
 wantUpdation = False
